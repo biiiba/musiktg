@@ -25,8 +25,8 @@
 <div class="container">
     <h2>Медиа Плеер</h2>
     <div class="player-box">
-        <div class="track-title" id="track-name">Загрузка трека...</div>
-        <audio id="audio-element" controls autocomplete="off"></audio>
+        <div class="track-title" id="track-name">Проверка трека...</div>
+        <audio id="audio-element" controls></audio>
         <button onclick="syncPlayer()">🔄 Обновить плеер</button>
     </div>
 </div>
@@ -35,8 +35,8 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // Тот же ключ, что и в Python-коде
-    const syncKey = "my_super_unique_player_bot_2026";
+    // Тот же самый ключ, что и в Python-коде бота
+    const syncKey = "final_ultra_player_2026_prod";
     const kvdbUrl = `https://kvdb.io/MN876sX87asD6g7a6sD7f8/${syncKey}`;
 
     async function syncPlayer() {
@@ -62,7 +62,7 @@
         }
     }
 
-    // Авто-синхронизация при открытии плеера
+    // Автоматическая проверка при каждом заходе в приложение
     syncPlayer();
 </script>
 </body>
