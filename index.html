@@ -2,183 +2,212 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Мой Spotify</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Музыкальный Плеер</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root {
-            --spotify-green: #1DB954;
-            --spotify-black: #191414;
-            --spotify-dark-grey: #212121;
-            --spotify-light-grey: #535353;
-            --white: #FFFFFF;
-        }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--spotify-black);
-            color: var(--white);
+            background-color: #1a1a1a;
+            color: #ffffff;
             margin: 0;
             padding: 20px;
             display: flex;
+            vertical-align: middle;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            min-height: 90vh;
-            user-select: none;
-            -webkit-user-select: none;
         }
-
-        .header {
-            text-align: center;
-            margin-top: 20px;
-            width: 100%;
-        }
-
-        .logo {
-            font-size: 28px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            color: var(--white);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .logo span {
-            color: var(--spotify-green);
-        }
-
-        .subtitle {
-            font-size: 14px;
-            color: var(--spotify-light-grey);
-            margin-top: 5px;
-        }
-
-        .main-card {
-            background-color: var(--spotify-dark-grey);
+        .container {
             width: 100%;
             max-width: 400px;
-            border-radius: 12px;
-            padding: 24px;
-            box-sizing: border-box;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            margin: auto 0;
         }
-
-        .input-label {
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-            color: var(--white);
-            display: block;
-        }
-
-        .input-field {
-            width: 100%;
-            background-color: #333333;
-            border: 1px solid transparent;
-            border-radius: 4px;
-            padding: 14px;
-            box-sizing: border-box;
-            color: var(--white);
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        .input-field:focus {
-            outline: none;
-            border-color: var(--spotify-green);
-            background-color: #3e3e3e;
-        }
-
-        .input-field::placeholder {
-            color: #b3b3b3;
-            font-size: 14px;
-        }
-
-        .btn-send {
-            width: 100%;
-            background-color: var(--spotify-green);
-            color: var(--white);
-            border: none;
-            border-radius: 50px;
-            padding: 16px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 20px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: transform 0.1s ease, background-color 0.2s ease;
-        }
-
-        .btn-send:active {
-            transform: scale(0.98);
-            background-color: #1ed760;
-        }
-
-        .footer-info {
-            font-size: 11px;
-            color: var(--spotify-light-grey);
+        h2 {
             text-align: center;
+            color: #e0e0e0;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+        .input-block {
+            background: #2d2d2d;
+            border-radius: 12px;
+            padding: 16px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-size: 13px;
+            color: #b0b0b0;
+            margin-bottom: 8px;
+        }
+        input {
             width: 100%;
-            line-height: 1.5;
-            margin-bottom: 10px;
+            padding: 12px;
+            background: #3d3d3d;
+            border: 1px solid #4d4d4d;
+            border-radius: 8px;
+            color: #fff;
+            box-sizing: border-box;
+            font-size: 14px;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #555555;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #666666;
+        }
+        .player-card {
+            background: #2d2d2d;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .track-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        .track-artist {
+            font-size: 13px;
+            color: #b0b0b0;
+            margin-bottom: 15px;
+        }
+        audio {
+            width: 100%;
+            margin-top: 5px;
+        }
+        .history-block {
+            background: #2d2d2d;
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .history-title {
+            font-size: 14px;
+            color: #b0b0b0;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #3d3d3d;
+            padding-bottom: 6px;
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #3d3d3d;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        .status {
+            font-size: 13px;
+            color: #b0b0b0;
+            text-align: center;
+            margin-top: 8px;
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="logo">📱 My <span>Spotify</span></div>
-        <div class="subtitle">Ультимативный загрузчик медиатеки</div>
+<div class="container">
+    <h2>Медиа Плеер</h2>
+
+    <div class="input-block">
+        <label>Ссылка на YouTube трек или подкаст</label>
+        <input type="text" id="track-url" placeholder="Вставьте ссылку...">
+        <button id="load-btn">Загрузить в плеер</button>
+        <div class="status" id="status-text"></div>
     </div>
 
-    <div class="main-card">
-        <label class="input-label" for="yt-url">Ссылка на YouTube трек или подкаст</label>
-        <input type="text" id="yt-url" class="input-field" placeholder="Вставьте https://youtube.com/..." autocomplete="off">
-        <button class="btn-send" id="send-btn">Загрузить в плеер</button>
+    <div class="player-card" id="player-block">
+        <div class="track-title" id="current-title">Название трека</div>
+        <div class="track-artist" id="current-artist">Исполнитель</div>
+        <audio id="audio-element" controls></audio>
     </div>
 
-    <div class="footer-info">
-        Дизайн разработан в стиле Spotify Dark Mode.<br>
-        После нажатия трек автоматически появится в чате Telegram с обложкой и автором канала.
+    <div class="history-block">
+        <div class="history-title">История загрузок</div>
+        <div id="history-list">
+            <div style="color: #777; font-size: 13px; text-align: center; padding: 10px;">Список пуст</div>
+        </div>
     </div>
+</div>
 
-    <script>
-        // Инициализируем Telegram WebApp
-        const tg = window.Telegram.WebApp;
-        tg.expand(); // Раскрываем окно на максимум
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
 
-        // Настраиваем цвета темы Telegram (чтобы кнопки подстраивались под окружение)
-        tg.ready();
+    let history = JSON.parse(localStorage.getItem('music_history') || '[]');
 
-        const sendBtn = document.getElementById('send-btn');
-        const ytInput = document.getElementById('yt-url');
-
-        sendBtn.addEventListener('click', () => {
-            const url = ytInput.value.trim();
-            
-            if (!url) {
-                alert('Пожалуйста, вставьте ссылку на ролик!');
-                return;
-            }
-
-            if (!url.includes('youtube.com') && !url.includes('youtu.be')) {
-                alert('Это не похоже на ссылку YouTube!');
-                return;
-            }
-
-            // Главная фишка: отправляем данные НАЗАД в нашего Python-бота
-            tg.sendData(url);
-            
-            // Закрываем мини-приложение
-            tg.close();
+    function updateHistoryUI() {
+        const list = document.getElementById('history-list');
+        if (history.length === 0) {
+            list.innerHTML = '<div style="color: #777; font-size: 13px; text-align: center; padding: 10px;">Список пуст</div>';
+            return;
+        }
+        list.innerHTML = '';
+        history.forEach((item, index) => {
+            const div = document.getElementById('history-list');
+            const row = document.createElement('div');
+            row.className = 'history-item';
+            row.innerHTML = `<div><strong>${item.title}</strong><br><small style="color:#888">${item.artist}</small></div><span>▶</span>`;
+            row.onclick = () => playTrack(item);
+            list.appendChild(row);
         });
+    }
+
+    function playTrack(item) {
+        document.getElementById('player-block').style.display = 'block';
+        document.getElementById('current-title').innerText = item.title;
+        document.getElementById('current-artist').innerText = item.artist;
+        const audio = document.getElementById('audio-element');
+        audio.src = item.url;
+        audio.play();
+    }
+
+    document.getElementById('load-btn').addEventListener('click', async () => {
+        const urlInput = document.getElementById('track-url').value.trim();
+        if (!urlInput) return alert('Вставьте ссылку!');
+
+        const status = document.getElementById('status-text');
+        status.innerText = '⏳ Загрузка и конвертация на сервере...';
+
+        try {
+            const response = await fetch('/api/download', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: urlInput })
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                status.innerText = '✅ Успешно загружено!';
+                const newItem = { title: data.title, artist: data.artist, url: data.audioUrl };
+                history.unshift(newItem);
+                localStorage.setItem('music_history', JSON.stringify(history));
+                updateHistoryUI();
+                playTrack(newItem);
+                document.getElementById('track-url').value = '';
+            } else {
+                status.innerText = '❌ Ошибка: ' + data.error;
+            }
+        } catch (e) {
+            status.innerText = '❌ Ошибка соединения с сервером.';
+        }
     </script>
 </body>
 </html>
