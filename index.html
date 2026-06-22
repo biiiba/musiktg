@@ -13,21 +13,20 @@
         }
         .container { width: 100%; max-width: 400px; }
         h2 { text-align: center; color: #e0e0e0; margin-bottom: 25px; }
-        .info-block { background: #2d2d2d; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px; }
-        .track-title { font-weight: 600; font-size: 16px; margin-bottom: 15px; color: #1db954; }
-        audio { width: 100%; }
-        .status { font-size: 13px; color: #aeaeae; text-align: center; margin-top: 15px; }
+        .player-box { background: #2d2d2d; border-radius: 12px; padding: 20px; text-align: center; }
+        .track-title { font-weight: 600; font-size: 16px; margin-bottom: 15px; color: #1db954; id: title }
+        audio { width: 100%; margin-top: 10px; }
+        button { width: 100%; padding: 12px; background: #1db954; color: #fff; border: none; border-radius: 8px; font-size: 15px; margin-top: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>Медиа Плеер</h2>
-
-    <div class="info-block">
-        <div class="track-title">Последний трек из чата</div>
+    <div class="player-box">
+        <div class="track-title" id="track-name">Проверка обновлений...</div>
         <audio id="audio-element" controls></audio>
-        <div class="status" id="status-text">Нажмите Play для воспроизведения трека, который вы скачали в чате бота.</div>
+        <button onclick="checkTrack()">🔄 Обновить плеер</button>
     </div>
 </div>
 
@@ -35,17 +34,34 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // Подгружаем файл, который бот сохранил на сервере WispByte
-    // Так как статический IP WispByte у нас 93.115.101.152 и порт плеера был настроен,
-    // Мы подключаем стрим напрямую через стабильный файловый линк
-    const audio = document.getElementById('audio-element');
-    
-    // Прямой адрес файла на твоем сервере WispByte
-    audio.src = "http://93.115.101.152:11897/music/web_track.m4a";
-    
-    audio.addEventListener('error', () => {
-        document.getElementById('status-text').innerText = "🔴 Трек еще не скачан в чате или бот выключен.";
-    });
+    // Прокси для превращения http в https, чтобы обойти блокировку Mixed Content
+    const proxy = "https://cors-anywhere.herokuapp.com/";
+    const serverUrl = "http://93.115.101.152:11897";
+
+    async function checkTrack() {
+        const titleEl = document.getElementById('track-name');
+        const audio = document.getElementById('audio-element');
+        
+        try {
+            // Запрашиваем инфо о треке через прокси
+            const res = await fetch(`${proxy}${serverUrl}/api/info`);
+            const data = await res.json();
+            
+            if (data.ready) {
+                titleEl.innerText = data.title;
+                // Подгружаем сам mp3 файл через прокси
+                audio.src = `${proxy}${serverUrl}/stream/track.mp3`;
+                audio.load();
+            } else {
+                titleEl.innerText = "⏳ Бот еще скачивает трек...";
+            }
+        } catch (e) {
+            titleEl.innerText = "🛑 Ошибка подключения к серверу бота";
+        }
+    }
+
+    // Проверяем трек при старте приложения
+    checkTrack();
 </script>
 </body>
 </html>
