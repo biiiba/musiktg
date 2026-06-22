@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Музыкальный Плеер</title>
+    <title>Медиа Плеер</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
@@ -16,117 +16,22 @@
             flex-direction: column;
             align-items: center;
         }
-        .container {
-            width: 100%;
-            max-width: 400px;
-        }
-        h2 {
-            text-align: center;
-            color: #e0e0e0;
-            margin-bottom: 25px;
-            font-weight: 500;
-        }
-        .input-block {
-            background: #2d2d2d;
-            border-radius: 12px;
-            padding: 16px;
-            box-sizing: border-box;
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            font-size: 13px;
-            color: #b0b0b0;
-            margin-bottom: 8px;
-        }
-        input {
-            width: 100%;
-            padding: 12px;
-            background: #3d3d3d;
-            border: 1px solid #4d4d4d;
-            border-radius: 8px;
-            color: #fff;
-            box-sizing: border-box;
-            font-size: 14px;
-            outline: none;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #24a1de;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 500;
-            cursor: pointer;
-            margin-top: 12px;
-            transition: background 0.2s, opacity 0.2s;
-        }
-        button:hover {
-            background: #208ec4;
-        }
-        button:disabled {
-            background: #444444 !important;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-        .player-card {
-            background: #2d2d2d;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 20px;
-            display: none;
-        }
-        .track-title {
-            font-weight: 600;
-            font-size: 16px;
-            margin-bottom: 4px;
-            color: #fff;
-        }
-        .track-artist {
-            font-size: 13px;
-            color: #b0b0b0;
-            margin-bottom: 15px;
-        }
-        audio {
-            width: 100%;
-            margin-top: 5px;
-        }
-        .history-block {
-            background: #2d2d2d;
-            border-radius: 12px;
-            padding: 16px;
-        }
-        .history-title {
-            font-size: 14px;
-            color: #b0b0b0;
-            margin-bottom: 12px;
-            border-bottom: 1px solid #3d3d3d;
-            padding-bottom: 6px;
-        }
-        .history-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #3d3d3d;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        .history-item:last-child {
-            border-bottom: none;
-        }
-        .status {
-            font-size: 13px;
-            color: #aeaeae;
-            text-align: center;
-            margin-top: 14px;
-            line-height: 1.5;
-            padding: 6px;
-            border-radius: 6px;
-        }
+        .container { width: 100%; max-width: 400px; }
+        h2 { text-align: center; color: #e0e0e0; margin-bottom: 25px; font-weight: 500; }
+        .input-block { background: #2d2d2d; border-radius: 12px; padding: 16px; box-sizing: border-box; margin-bottom: 20px; }
+        label { display: block; font-size: 13px; color: #b0b0b0; margin-bottom: 8px; }
+        input { width: 100%; padding: 12px; background: #3d3d3d; border: 1px solid #4d4d4d; border-radius: 8px; color: #fff; box-sizing: border-box; font-size: 14px; outline: none; }
+        button { width: 100%; padding: 12px; background: #1db954; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; margin-top: 12px; }
+        button:disabled { background: #444444 !important; cursor: not-allowed; }
+        .player-card { background: #2d2d2d; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px; display: none; }
+        .track-title { font-weight: 600; font-size: 16px; margin-bottom: 4px; color: #fff; }
+        .track-artist { font-size: 13px; color: #b0b0b0; margin-bottom: 15px; }
+        audio { width: 100%; margin-top: 5px; }
+        .history-block { background: #2d2d2d; border-radius: 12px; padding: 16px; }
+        .history-title { font-size: 14px; color: #b0b0b0; margin-bottom: 12px; border-bottom: 1px solid #3d3d3d; padding-bottom: 6px; }
+        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #3d3d3d; font-size: 14px; cursor: pointer; }
+        .history-item:last-child { border-bottom: none; }
+        .status { font-size: 13px; color: #aeaeae; text-align: center; margin-top: 14px; line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -138,7 +43,7 @@
         <label>Ссылка на YouTube трек или подкаст</label>
         <input type="text" id="track-url" placeholder="Вставьте ссылку...">
         <button id="load-btn">Загрузить в плеер</button>
-        <div class="status" id="status-text">⚪ Скачивание не идет (ожидание ссылки)</div>
+        <div class="status" id="status-text">⚪ Ожидание ссылки...</div>
     </div>
 
     <div class="player-card" id="player-block">
@@ -159,22 +64,20 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
+    // Твой точный адрес сервера WispByte с выделенным портом
+    const BOT_SERVER_IP = "93.115.101.152:11897"; 
+
     let history = JSON.parse(localStorage.getItem('music_history') || '[]');
     updateHistoryUI();
 
-    let statusInterval = null;
-
     function updateHistoryUI() {
         const list = document.getElementById('history-list');
-        if (history.length === 0) {
-            list.innerHTML = '<div style="color: #777; font-size: 13px; text-align: center; padding: 10px;">Список пуст</div>';
-            return;
-        }
+        if (history.length === 0) return;
         list.innerHTML = '';
         history.forEach((item) => {
             const row = document.createElement('div');
             row.className = 'history-item';
-            row.innerHTML = `<div><strong>${item.title}</strong><br><small style="color:#888">${item.artist}</small></div><span style="color:#24a1de">▶</span>`;
+            row.innerHTML = `<div><strong>${item.title}</strong><br><small style="color:#888">${item.artist}</small></div><span style="color:#1db954">▶</span>`;
             row.onclick = () => playTrack(item);
             list.appendChild(row);
         });
@@ -187,137 +90,46 @@
         const audio = document.getElementById('audio-element');
         audio.src = item.url;
         audio.play().catch(e => {
-            document.getElementById('status-text').innerHTML = '❌ Ошибка воспроизведения файла. Ссылка могла устареть.';
+            document.getElementById('status-text').innerHTML = '❌ Ошибка воспроизведения.';
         });
-    }
-
-    function startLoadingAnimation(element, baseText) {
-        let dots = 0;
-        element.innerHTML = `🟡 <strong>${baseText}</strong>`;
-        statusInterval = setInterval(() => {
-            dots = (dots + 1) % 4;
-            const dotStr = '.'.repeat(dots);
-            element.innerHTML = `🟡 <strong>${baseText}${dotStr}</strong><br><small style="color:#aaa">Пожалуйста, не закрывайте вкладку</small>`;
-        }, 500);
-    }
-
-    function stopLoadingAnimation() {
-        if (statusInterval) {
-            clearInterval(statusInterval);
-            statusInterval = null;
-        }
-    }
-
-    // Вспомогательная функция для выделения ID видео из любых типов ссылок YouTube
-    function extractYouTubeId(url) {
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-        const match = url.match(regExp);
-        return (match && match[2].length === 11) ? match[2] : null;
     }
 
     document.getElementById('load-btn').addEventListener('click', async () => {
         const urlInput = document.getElementById('track-url').value.trim();
-        if (!urlInput) {
-            alert('Пожалуйста, вставьте ссылку!');
-            return;
-        }
+        if (!urlInput) return alert('Пожалуйста, вставьте ссылку!');
 
         const btn = document.getElementById('load-btn');
         const status = document.getElementById('status-text');
 
         btn.disabled = true;
-        btn.innerText = 'Скачивание...';
-        
-        startLoadingAnimation(status, 'Идет скачивание');
+        btn.innerText = 'Бот скачивает трек...';
+        status.innerHTML = '🟡 <strong>Запрос отправлен на WispByte.</strong><br>Идет извлечение звука через yt-dlp...';
 
-        let downloadSuccess = false;
-        let audioData = null;
-
-        // ЭТАП 1: Пробуем основной Vercel API вашего проекта
         try {
-            const response = await fetch('/api/download', {
+            const response = await fetch(`http://${BOT_SERVER_IP}/api/download`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ url: urlInput })
             });
+            
             const data = await response.json();
+            
             if (data.success && data.audioUrl) {
-                downloadSuccess = true;
-                audioData = data;
+                status.innerHTML = '✅ <strong>Успешно загружено!</strong>';
+                const newItem = { title: data.title, artist: data.artist, url: data.audioUrl };
+                
+                history.unshift(newItem);
+                localStorage.setItem('music_history', JSON.stringify(history));
+                updateHistoryUI();
+                playTrack(newItem);
+                document.getElementById('track-url').value = '';
+            } else {
+                status.innerHTML = '❌ <strong>Ошибка yt-dlp:</strong> ' + (data.error || 'Не удалось скачать');
             }
         } catch (e) {
-            console.log("Основной сервер недоступен, переключаемся...");
+            status.innerHTML = '❌ <strong>Ошибка соединения:</strong> Убедись, что Python-бот перезапущен на сервере WispByte.';
         }
 
-        // ЭТАП 2: Если основной сервер не справился, задействуем отказоустойчивый шлюз
-        if (!downloadSuccess) {
-            const videoId = extractYouTubeId(urlInput);
-            if (videoId) {
-                stopLoadingAnimation();
-                startLoadingAnimation(status, 'Поиск аудио-потока на зеркалах');
-                
-                try {
-                    // Используем высокоскоростной стабильный API шлюз без CORS ограничений
-                    const apiEndpoint = `https://api.veyt.me/download?v=${videoId}&f=mp3&q=128`;
-                    const res = await fetch(apiEndpoint);
-                    const result = await res.json();
-                    
-                    if (result && result.url) {
-                        audioData = {
-                            success: true,
-                            title: result.title || 'YouTube Аудио',
-                            artist: 'Загружено',
-                            audioUrl: result.url
-                        };
-                        downloadSuccess = true;
-                    }
-                } catch (fallbackError) {
-                    console.log("Резервное зеркало 1 не ответило, пробуем альтернативный шлюз...");
-                }
-                
-                // ЭТАП 3: Финальный резервный шлюз, если предыдущие попытки заблокированы
-                if (!downloadSuccess) {
-                    try {
-                        const directGate = `https://api.download.wuk.sh/api/json`;
-                        const res = await fetch(directGate, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                            body: JSON.stringify({ url: urlInput, text: true, isAudioOnly: true })
-                        });
-                        const result = await res.json();
-                        if (result && result.url) {
-                            audioData = {
-                                success: true,
-                                title: result.text || 'Музыкальный трек',
-                                artist: 'YouTube',
-                                audioUrl: result.url
-                            };
-                            downloadSuccess = true;
-                        }
-                    } catch (e) {
-                        console.error("Все шлюзы загрузки перегружены");
-                    }
-                }
-            }
-        }
-
-        stopLoadingAnimation();
-
-        if (downloadSuccess && audioData) {
-            status.innerHTML = '✅ <strong>Успешно загружено!</strong>';
-            const newItem = { title: audioData.title, artist: audioData.artist, url: audioData.audioUrl };
-            
-            history.unshift(newItem);
-            localStorage.setItem('music_history', JSON.stringify(history));
-            updateHistoryUI();
-            
-            playTrack(newItem);
-            document.getElementById('track-url').value = '';
-        } else {
-            status.innerHTML = '❌ <strong>Ошибка:</strong> Не удалось извлечь аудио из ссылки. YouTube временно блокирует серверные запросы. Попробуйте другую ссылку или повторите позже.';
-        }
-
-        // Возвращаем кнопку в активное состояние
         btn.disabled = false;
         btn.innerText = 'Загрузить в плеер';
     });
