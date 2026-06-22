@@ -13,7 +13,6 @@
             margin: 0;
             padding: 20px;
             display: flex;
-            vertical-align: middle;
             flex-direction: column;
             align-items: center;
         }
@@ -54,7 +53,7 @@
         button {
             width: 100%;
             padding: 12px;
-            background: #555555;
+            background: #24a1de;
             color: #fff;
             border: none;
             border-radius: 8px;
@@ -62,15 +61,15 @@
             font-weight: 500;
             cursor: pointer;
             margin-top: 12px;
-            transition: background 0.2s;
+            transition: background 0.2s, opacity 0.2s;
         }
         button:hover {
-            background: #666666;
+            background: #208ec4;
         }
         button:disabled {
             background: #444444 !important;
             cursor: not-allowed;
-            opacity: 0.8;
+            opacity: 0.7;
         }
         .player-card {
             background: #2d2d2d;
@@ -84,6 +83,7 @@
             font-weight: 600;
             font-size: 16px;
             margin-bottom: 4px;
+            color: #fff;
         }
         .track-artist {
             font-size: 13px;
@@ -110,7 +110,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
+            padding: 10px 0;
             border-bottom: 1px solid #3d3d3d;
             font-size: 14px;
             cursor: pointer;
@@ -120,10 +120,12 @@
         }
         .status {
             font-size: 13px;
-            color: #b0b0b0;
+            color: #aeaeae;
             text-align: center;
-            margin-top: 12px;
-            line-height: 1.4;
+            margin-top: 14px;
+            line-height: 1.5;
+            padding: 6px;
+            border-radius: 6px;
         }
     </style>
 </head>
@@ -136,7 +138,7 @@
         <label>Ссылка на YouTube трек или подкаст</label>
         <input type="text" id="track-url" placeholder="Вставьте ссылку...">
         <button id="load-btn">Загрузить в плеер</button>
-        <div class="status" id="status-text">🔴 Скачивание не идет (ожидание ссылки)</div>
+        <div class="status" id="status-text">⚪ Скачивание не идет (ожидание ссылки)</div>
     </div>
 
     <div class="player-card" id="player-block">
@@ -160,6 +162,8 @@
     let history = JSON.parse(localStorage.getItem('music_history') || '[]');
     updateHistoryUI();
 
+    let statusInterval = null;
+
     function updateHistoryUI() {
         const list = document.getElementById('history-list');
         if (history.length === 0) {
@@ -170,7 +174,7 @@
         history.forEach((item) => {
             const row = document.createElement('div');
             row.className = 'history-item';
-            row.innerHTML = `<div><strong>${item.title}</strong><br><small style="color:#888">${item.artist}</small></div><span>▶</span>`;
+            row.innerHTML = `<div><strong>${item.title}</strong><br><small style="color:#888">${item.artist}</small></div><span style="color:#24a1de">▶</span>`;
             row.onclick = () => playTrack(item);
             list.appendChild(row);
         });
@@ -183,59 +187,112 @@
         const audio = document.getElementById('audio-element');
         audio.src = item.url;
         audio.play().catch(e => {
-            document.getElementById('status-text').innerText = '❌ Ошибка воспроизведения аудиофайла.';
+            document.getElementById('status-text').innerHTML = '❌ Ошибка воспроизведения файла. Ссылка могла устареть.';
         });
+    }
+
+    function startLoadingAnimation(element, baseText) {
+        let dots = 0;
+        element.innerHTML = `🟡 <strong>${baseText}</strong>`;
+        statusInterval = setInterval(() => {
+            dots = (dots + 1) % 4;
+            const dotStr = '.'.repeat(dots);
+            element.innerHTML = `🟡 <strong>${baseText}${dotStr}</strong><br><small style="color:#aaa">Пожалуйста, не закрывайте вкладку</small>`;
+        }, 500);
+    }
+
+    function stopLoadingAnimation() {
+        if (statusInterval) {
+            clearInterval(statusInterval);
+            statusInterval = null;
+        }
     }
 
     document.getElementById('load-btn').addEventListener('click', async () => {
         const urlInput = document.getElementById('track-url').value.trim();
         if (!urlInput) {
-            alert('Вставьте ссылку!');
+            alert('Пожалуйста, вставьте ссылку!');
             return;
         }
 
         const btn = document.getElementById('load-btn');
         const status = document.getElementById('status-text');
 
-        // Блокируем кнопку и меняем статусы
+        // Блокировка элементов интерфейса
         btn.disabled = true;
-        btn.innerText = '⏳ Идет скачивание...';
-        status.innerHTML = '🟡 <strong>Идет скачивание!</strong><br>Пожалуйста, подождите, сервер извлекает аудио-поток...';
+        btn.innerText = 'Скачивание...';
+        
+        // Запуск динамического статуса загрузки
+        startLoadingAnimation(status, 'Идет скачивание');
 
         try {
-            const response = await fetch('/api/download', {
+            // Попытка 1: Запрос на твой собственный Vercel API
+            let response = await fetch('/api/download', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ url: urlInput })
             });
             
-            const data = await response.json();
+            let data = await response.json();
+
+            // Если твой сервер выдал таймаут или ошибку, пробуем резервный метод конвертации
+            if (!data.success) {
+                stopLoadingAnimation();
+                startLoadingAnimation(status, 'Идет скачивание (резервный сервер)');
+                
+                // Используем стабильный альтернативный обработчик youtube контента
+                const videoIdMatch = urlInput.match(/(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=|\/watch\?.+&v=))/i);
+                if (videoIdMatch) {
+                    const fallbackRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://co.wuk.sh/api/json')}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ url: urlInput, aFormat: 'mp3', isAudioOnly: true })
+                    });
+                    const fallbackData = await fallbackRes.json();
+                    const parsed = JSON.parse(fallbackData.contents);
+                    
+                    if (parsed.url) {
+                        data = {
+                            success: true,
+                            title: parsed.text || 'YouTube Аудио',
+                            artist: 'Загружено',
+                            audioUrl: parsed.url
+                        };
+                    }
+                }
+            }
+
+            stopLoadingAnimation();
 
             if (data.success && data.audioUrl) {
-                status.innerText = '✅ Успешно загружено!';
+                status.innerHTML = '✅ <strong>Успешно загружено!</strong>';
                 const newItem = { title: data.title, artist: data.artist, url: data.audioUrl };
                 
-                // Сохраняем в историю загрузок устройства
+                // Сохраняем в историю и обновляем UI
                 history.unshift(newItem);
                 localStorage.setItem('music_history', JSON.stringify(history));
                 updateHistoryUI();
                 
-                // Запускаем воспроизведение
+                // Автозапуск
                 playTrack(newItem);
                 document.getElementById('track-url').value = '';
             } else {
-                status.innerText = '❌ Ошибка: ' + (data.error || 'Не удалось обработать ссылку');
+                status.innerHTML = '❌ <strong>Ошибка:</strong> ' + (data.error || 'Не удалось извлечь аудио из ссылки. Попробуйте другое видео.');
             }
         } catch (e) {
-            status.innerText = '❌ Ошибка соединения с сервером Vercel API.';
+            stopLoadingAnimation();
+            status.innerHTML = '❌ <strong>Ошибка соединения с сервером.</strong>';
             console.error(e);
         } finally {
-            // Разблокируем интерфейс обратно
+            // Возвращаем кнопку в исходное состояние
             btn.disabled = false;
             btn.innerText = 'Загрузить в плеер';
-            if (!status.innerText.startsWith('✅') && !status.innerText.startsWith('❌')) {
-                status.innerText = '🔴 Скачивание не идет (ожидание ссылки)';
-            }
+            
+            // Если процесс завершился без явных ошибок/успехов, сбрасываем статус
+            setTimeout(() => {
+                if (status.innerHTML.includes('Успешно') || status.innerHTML.includes('Ошибка')) return;
+                status.innerHTML = '⚪ Скачивание не идет (ожидание ссылки)';
+            }, 5000);
         }
     });
 </script>
