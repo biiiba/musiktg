@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Мой Spotify</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --spotify-green: #1DB954;
+            --spotify-black: #191414;
+            --spotify-dark-grey: #212121;
+            --spotify-light-grey: #535353;
+            --white: #FFFFFF;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--spotify-black);
+            color: var(--white);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 90vh;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .header {
+            text-align: center;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .logo span {
+            color: var(--spotify-green);
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--spotify-light-grey);
+            margin-top: 5px;
+        }
+
+        .main-card {
+            background-color: var(--spotify-dark-grey);
+            width: 100%;
+            max-width: 400px;
+            border-radius: 12px;
+            padding: 24px;
+            box-sizing: border-box;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            margin: auto 0;
+        }
+
+        .input-label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            color: var(--white);
+            display: block;
+        }
+
+        .input-field {
+            width: 100%;
+            background-color: #333333;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            padding: 14px;
+            box-sizing: border-box;
+            color: var(--white);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--spotify-green);
+            background-color: #3e3e3e;
+        }
+
+        .input-field::placeholder {
+            color: #b3b3b3;
+            font-size: 14px;
+        }
+
+        .btn-send {
+            width: 100%;
+            background-color: var(--spotify-green);
+            color: var(--white);
+            border: none;
+            border-radius: 50px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: transform 0.1s ease, background-color 0.2s ease;
+        }
+
+        .btn-send:active {
+            transform: scale(0.98);
+            background-color: #1ed760;
+        }
+
+        .footer-info {
+            font-size: 11px;
+            color: var(--spotify-light-grey);
+            text-align: center;
+            width: 100%;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo">📱 My <span>Spotify</span></div>
+        <div class="subtitle">Ультимативный загрузчик медиатеки</div>
+    </div>
+
+    <div class="main-card">
+        <label class="input-label" for="yt-url">Ссылка на YouTube трек или подкаст</label>
+        <input type="text" id="yt-url" class="input-field" placeholder="Вставьте https://youtube.com/..." autocomplete="off">
+        <button class="btn-send" id="send-btn">Загрузить в плеер</button>
+    </div>
+
+    <div class="footer-info">
+        Дизайн разработан в стиле Spotify Dark Mode.<br>
+        После нажатия трек автоматически появится в чате Telegram с обложкой и автором канала.
+    </div>
+
+    <script>
+        // Инициализируем Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Раскрываем окно на максимум
+
+        // Настраиваем цвета темы Telegram (чтобы кнопки подстраивались под окружение)
+        tg.ready();
+
+        const sendBtn = document.getElementById('send-btn');
+        const ytInput = document.getElementById('yt-url');
+
+        sendBtn.addEventListener('click', () => {
+            const url = ytInput.value.trim();
+            
+            if (!url) {
+                alert('Пожалуйста, вставьте ссылку на ролик!');
+                return;
+            }
+
+            if (!url.includes('youtube.com') && !url.includes('youtu.be')) {
+                alert('Это не похоже на ссылку YouTube!');
+                return;
+            }
+
+            // Главная фишка: отправляем данные НАЗАД в нашего Python-бота
+            tg.sendData(url);
+            
+            // Закрываем мини-приложение
+            tg.close();
+        });
+    </script>
+</body>
+</html>
